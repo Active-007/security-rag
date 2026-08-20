@@ -33,7 +33,8 @@ def main() -> None:
         local_dir=str(segmentation_target),
     )
 
-    print("公开模型下载完成。定制分类模型请按 docs/RESTORE.md 重建或恢复备份。")
+    print("公开模型下载完成。下一步请运行: python -m rag_qa.core.query_classifier")
+    print("分类器训练和验收说明见 docs/RESTORE.md。")
 
 
 if __name__ == "__main__":

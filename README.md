@@ -191,7 +191,19 @@ rag_qa/models/
 └── nlp_bert_document-segmentation_chinese-base/  # 文档分割模型
 ```
 
-> 📌 **注意**：公开模型文件为数 GB，不会被 Git 跟踪。`bert_query_classifier` 是本项目训练产物，需要从可信备份恢复，或运行 `python -m rag_qa.core.query_classifier` 重新训练。
+公开模型下载完成后，使用仓库内的 4,981 条分类训练数据重新训练查询分类器：
+
+```bash
+python -m rag_qa.core.query_classifier
+```
+
+训练结果会保存到 `rag_qa/models/bert_query_classifier/`。训练完成后执行：
+
+```bash
+python scripts/verify_restore.py
+```
+
+> 📌 **注意**：公开模型文件为数 GB，不会被 Git 跟踪。查询分类器也不上传模型权重，而是由 `security_rag/classify_data/model_generic_5000.json` 重新训练。CPU 训练可能耗时较长，并需要为最终模型和临时检查点预留约 2 GB 磁盘空间；完整步骤见 [`docs/RESTORE.md`](docs/RESTORE.md)。
 
 原始知识库文档默认不会进入 Git，以防业务资料意外公开。删除本地项目前，必须按 [`docs/RESTORE.md`](docs/RESTORE.md) 将文档纳入经过确认的私有仓库，或保存到单独的加密备份。
 

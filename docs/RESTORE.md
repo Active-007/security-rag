@@ -42,18 +42,59 @@ python scripts/download_models.py
 
 这些公开模型合计数 GB，不应直接写入普通 Git 历史。下载时需要访问 Hugging Face 和 ModelScope。
 
-## 4. 恢复定制查询分类模型
+## 4. 重新训练定制查询分类模型
 
-`rag_qa/models/bert_query_classifier/` 是本项目训练产物，不属于公开上游模型。可选择以下一种方式：
+`rag_qa/models/bert_query_classifier/` 是本项目的训练产物，不上传模型权重。全新克隆后，按下面的步骤用仓库内训练集重新生成。
 
-1. 从单独的可信备份恢复该目录；或
-2. 在公开模型下载完成后，用仓库内训练集重新训练：
+### 4.1 检查训练前置条件
+
+确认已经完成依赖安装和公开模型下载，并且以下文件存在：
+
+```text
+rag_qa/models/bert-base-chinese/config.json
+rag_qa/models/bert-base-chinese/pytorch_model.bin
+security_rag/classify_data/model_generic_5000.json
+```
+
+训练集包含 4,981 条有效查询分类数据（`通用知识` 2,500 条、`专业咨询` 2,481 条）。训练过程需要 `torch`、`transformers`、`scikit-learn` 和 `accelerate`，它们已经写入 `requirements.txt`。
+
+### 4.2 开始训练
+
+在项目根目录执行：
 
 ```powershell
 python -m rag_qa.core.query_classifier
 ```
 
-训练会读取 `security_rag/classify_data/model_generic_5000.json`，并将最终模型保存到 `rag_qa/models/bert_query_classifier/`。训练检查点写入 `rag_qa/core/bert_results/`，不需要备份。
+程序会：
+
+1. 从 `rag_qa/models/bert-base-chinese/` 加载中文 BERT 基础模型；
+2. 读取 `security_rag/classify_data/model_generic_5000.json`；
+3. 按 80%/20% 划分训练集和验证集；
+4. 训练 3 个 epoch；
+5. 将训练检查点写入 `rag_qa/core/bert_results/`；
+6. 将最终可运行模型保存到 `rag_qa/models/bert_query_classifier/`。
+
+CPU 训练可能耗时较长；如果 PyTorch 能识别 CUDA，代码会自动使用 GPU。建议为最终模型和训练检查点预留至少 2 GB 可用磁盘空间。重新训练能够恢复项目功能，但不同机器或硬件上的模型参数不保证与原本地模型逐字节一致。
+
+### 4.3 验证训练结果
+
+训练结束后确认目录中至少存在以下文件：
+
+```text
+rag_qa/models/bert_query_classifier/config.json
+rag_qa/models/bert_query_classifier/model.safetensors
+rag_qa/models/bert_query_classifier/tokenizer_config.json
+rag_qa/models/bert_query_classifier/vocab.txt
+```
+
+然后运行恢复检查：
+
+```powershell
+python scripts/verify_restore.py
+```
+
+看到“恢复检查通过”后，`rag_qa/core/bert_results/` 中的临时训练检查点无需备份；是否删除可按本机磁盘情况自行决定。
 
 ## 5. 恢复知识库文档
 
@@ -92,6 +133,6 @@ python app.py
 
 1. GitHub 默认分支上的最新提交与本地准备发布的提交一致。
 2. 在一个新的临时目录执行一次全新克隆，不复用当前工作区。
-3. 全新克隆中能安装依赖、下载模型、恢复定制分类模型和知识库文档。
+3. 全新克隆中能安装依赖、下载公开模型、重新训练定制分类模型，并读取知识库文档。
 4. `config.ini` 中的真实密钥已经另行安全保存，且泄露过的 Key 已撤销。
 5. 仅在上述检查全部通过后删除本地目录。
