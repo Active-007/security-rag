@@ -1,0 +1,50 @@
+# IDE
+.idea/
+.vscode/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+venv/
+.venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# 模型文件和训练产物（约 7.5 GB，不进入普通 Git 历史）
+# 下载与重建方法见 docs/RESTORE.md。
+/rag_qa/models/
+/rag_qa/core/bert_results/
+/rag_qa/core/bert_logs/
+/rag_qa/**/checkpoints/
+
+# 配置文件（含敏感信息）
+config.ini
+.env
+.env.*
+!.env.example
+
+# 日志
+logs/
+**/*.log
+
+# 数据文件（大文件）
+/rag_qa/data/**/*.pdf
+/rag_qa/data/**/*.doc
+/rag_qa/data/**/*.docx
+/rag_qa/data/**/*.ppt
+/rag_qa/data/**/*.pptx
+/rag_qa/data/**/*.png
+/rag_qa/data/**/*.jpg
+/rag_qa/data/**/*.jpeg
+
+# 评估结果
+/rag_qa/rag_assessment/*.csv
+
+# OS
+.DS_Store
+Thumbs.db
+
+# 向量数据库本地存储
+**/chroma_db/

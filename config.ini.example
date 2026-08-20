@@ -1,0 +1,137 @@
+# ============================================
+# Security RAG 项目配置文件模板
+# ============================================
+# 使用方法：
+# 1. 将此文件复制为 config.ini: cp config.ini.example config.ini
+# 2. 根据你的环境修改下方各配置项
+# 3. 保存后即可使用
+#
+# 注意：config.ini 包含敏感信息（密码、API密钥等），已被 .gitignore 排除
+#       请勿将包含真实配置的 config.ini 提交到代码仓库
+
+# --------------------------------------------
+# MySQL 数据库配置
+# 用于存储结构化数据（如安全职责、武装押运等业务数据）
+# --------------------------------------------
+[mysql]
+# MySQL 主机地址（如：192.168.1.100 或 localhost）
+host = your_mysql_host
+# MySQL 端口（默认：3306）
+port = 3306
+# MySQL 用户名
+user = root
+# MySQL 密码（请使用强密码）
+password = your_mysql_password
+# MySQL 数据库名
+database = security_rag
+
+# --------------------------------------------
+# Redis 缓存配置
+# 用于查询结果缓存，提升响应速度
+# --------------------------------------------
+[redis]
+# Redis 主机地址
+host = your_redis_host
+# Redis 端口（默认：6379）
+port = 6379
+# Redis 数据库编号（0-15，默认使用0）
+db = 0
+# Redis 密码（如果设置了密码请取消注释并填写）
+# password = your_redis_password
+
+# --------------------------------------------
+# Milvus 向量数据库配置
+# 用于存储文档向量，实现语义检索
+# --------------------------------------------
+[milvus]
+# Milvus 主机地址
+host = your_milvus_host
+# Milvus 端口（默认：19530）
+port = 19530
+# Milvus 数据库名（需要预先创建）
+database_name = security_db
+# Milvus 集合名（向量集合名称）
+collection_name = security_knowledge
+
+# --------------------------------------------
+# 日志配置
+# --------------------------------------------
+[logger]
+# 日志文件路径（请使用正斜杠 / 或双反斜杠 \\）
+# 示例：log_file = D:/projects/security_rag/logs/app.log
+# 示例：log_file = /home/user/logs/app.log
+log_file = your_log_file_path/app.log
+
+# --------------------------------------------
+# LLM 大语言模型配置
+# 当前使用阿里云百炼（DashScope）的模型服务
+# --------------------------------------------
+[llm]
+# 模型名称
+# 可选模型：
+#   - qwen-max（通义千问Max，推荐）
+#   - qwen-plus（通义千问Plus）
+#   - qwen-turbo（通义千问Turbo，速度快）
+#   - qwen3.7-max-preview（Qwen3.7-Max预览版）
+model = qwen-max
+# DashScope API 密钥
+# 获取地址：https://dashscope.console.aliyun.com/apiKey
+dashscope_api_key = sk-your-dashscope-api-key
+# DashScope API 地址（国内版无需修改）
+dashscope_base_url = https://dashscope.aliyuncs.com/compatible-mode/v1
+
+# --------------------------------------------
+# 文档检索参数配置
+# 控制文档分块和检索的行为
+# --------------------------------------------
+[retrieval]
+# 父块大小：大块文档的字符数（推荐：800-1500）
+parent_chunk_size = 1000
+# 子块大小：小块文档的字符数（推荐：150-300）
+child_chunk_size = 200
+# 父块重叠大小：相邻父块共享的字符数（推荐：100-200）
+parent_chunk_overlap = 150
+# 子块重叠大小：相邻子块共享的字符数（推荐：20-50）
+child_chunk_overlap = 30
+# 检索返回数量：每次查询返回的相关文档块数（推荐：3-10）
+retrieval_k = 5
+# 最终候选数量：重排序后的最终答案数量（推荐：1-3）
+candidate_m = 2
+
+# --------------------------------------------
+# 应用配置
+# --------------------------------------------
+[app]
+# 有效数据来源列表（Python列表格式）
+# 根据你的业务数据来源进行修改
+valid_sources = ["security_duty", "armed_escort"]
+# 客服电话（用于在回答中提供联系方式）
+customer_service_phone = 400-123-4567
+
+# ============================================
+# 配置说明
+# ============================================
+#
+# 1. 环境变量优先级：
+#    - 如果设置了同名环境变量，将覆盖 config.ini 中的配置
+#    - 例如：export MYSQL_HOST=xxx 会覆盖 [mysql] host 配置
+#
+# 2. 路径格式：
+#    - Windows: D:/projects/security_rag/logs/app.log
+#    - Linux/Mac: /home/user/logs/app.log
+#    - 注意：使用正斜杠 / 或双反斜杠 \\
+#
+# 3. 敏感信息保护：
+#    - 请勿将 config.ini 提交到 Git 仓库
+#    - 建议使用环境变量存储敏感配置
+#    - 可使用 .env 文件配合 python-dotenv 使用
+#
+# 4. 常见问题：
+#    - MySQL/Redis/Milvus 连接失败：检查 host、port、网络连通性
+#    - 日志不写入：检查 log_file 路径权限
+#    - LLM 调用失败：检查 API Key 是否正确、账户是否有余额
+#
+# 5. 更多帮助：
+#    - 查看 base/config.py 了解所有配置项
+#    - 访问项目文档获取详细配置指南
+# ============================================
